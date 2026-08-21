@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mika Santos — Video Editor</title>
+<meta name="description" content="Mika Santos — video editor. Wedding films, brand content, music videos and short-form edits, cut and graded to hold attention.">
+<meta name="theme-color" content="#0B0D12">
+
+<!-- Google Fonts: Bebas Neue (display / timecode-esque), Inter (body), Space Mono (utility/timecode) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     DESIGN TOKENS
+     Change these to re-skin the whole site.
+     ============================================================ */
+  :root{
+    --bg:            #0B0D12;   /* base — near-black, blue-charcoal like a grading suite at night */
+    --bg-elev:       #12151C;   /* raised panels / cards */
+    --bg-elev-2:     #181C25;
+    --line:          rgba(237,239,245,0.09);
+    --line-strong:   rgba(237,239,245,0.16);
+    --text:          #EDEFF5;
+    --text-dim:      #9096A3;
+    --text-dimmer:   #676D7A;
+    --amber:         #E8A33D;   /* safelight amber — signature accent */
+    --amber-dim:     #7A5A26;
+    --cyan:          #4FD1E8;   /* scope cyan — secondary accent */
+    --magenta:       #E85F9E;   /* scope magenta — used sparingly */
+    --radius:        14px;
+    --radius-sm:     8px;
+    --maxw:          1180px;
+    --ff-display:    'Bebas Neue', 'Arial Narrow', sans-serif;
+    --ff-body:       'Inter', system-ui, sans-serif;
+    --ff-mono:       'Space Mono', 'Courier New', monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--ff-body);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  ::selection{background:var(--amber);color:#14110A;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  .eyebrow{
+    font-family:var(--ff-mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:16px;height:1px;background:var(--amber);display:inline-block;
+  }
+
+  a:focus-visible,button:focus-visible,[tabindex]:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  header.site-nav{
+    position:sticky; top:0; z-index:40;
+    background:rgba(11,13,18,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    height:68px;
+  }
+  .nav-brand{
+    font-family:var(--ff-display);
+    font-size:22px;
+    letter-spacing:.03em;
+    text-decoration:none;
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .nav-brand .dot{color:var(--amber);}
+  nav.nav-links{display:flex; align-items:center; gap:28px;}
+  nav.nav-links a{
+    text-decoration:none;
+    font-size:13px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    font-weight:600;
+    transition:color .15s ease;
+  }
+  nav.nav-links a:hover{color:var(--text);}
+  .nav-cta{
+    border:1px solid var(--line-strong);
+    padding:9px 16px;
+    border-radius:100px;
+    font-size:12px !important;
+    color:var(--text) !important;
+  }
+  .nav-cta:hover{border-color:var(--amber); color:var(--amber) !important;}
+  .nav-toggle{display:none;background:none;border:none;color:var(--text);padding:6px;}
+  @media (max-width:760px){
+    nav.nav-links{
+      position:absolute; top:68px; left:0; right:0;
+      background:var(--bg-elev);
+      border-bottom:1px solid var(--line);
+      flex-direction:column; align-items:flex-start;
+      padding:16px 20px 22px; gap:16px;
+      display:none;
+    }
+    nav.nav-links.open{display:flex;}
+    .nav-toggle{display:block;}
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero{
+    padding:88px 0 0;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(600px 300px at 85% 0%, rgba(232,163,61,0.10), transparent 60%),
+      radial-gradient(500px 260px at 5% 20%, rgba(79,209,232,0.07), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative;}
+  .hero h1{
+    font-family:var(--ff-display);
+    font-weight:400;
+    font-size:clamp(42px, 8vw, 88px);
+    line-height:0.98;
+    letter-spacing:.005em;
+    margin:22px 0 20px;
+    max-width:15ch;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--amber);
+  }
+  .hero p.lede{
+    font-size:clamp(16px,2vw,19px);
+    color:var(--text-dim);
+    max-width:52ch;
+    margin:0 0 34px;
+  }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap:28px;
+    margin-bottom:40px;
+  }
+  .hero-meta div{font-family:var(--ff-mono); font-size:12px; color:var(--text-dimmer);}
+  .hero-meta strong{
+    display:block; font-family:var(--ff-body); font-weight:700;
+    font-size:14px; color:var(--text); margin-top:3px;
+  }
+  .hero-meta .live-dot{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background:#4ADE80; margin-right:6px;
+    box-shadow:0 0 0 0 rgba(74,222,128,.6);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}
+    70%{box-shadow:0 0 0 8px rgba(74,222,128,0);}
+    100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}
+  }
+
+  .hero-actions{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:56px;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:14px 24px; border-radius:100px;
+    font-weight:700; font-size:14px; text-decoration:none;
+    border:1px solid transparent; cursor:pointer;
+    transition:transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--amber); color:#14110A;}
+  .btn-primary:hover{background:#f0b158;}
+  .btn-ghost{border-color:var(--line-strong); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--cyan); color:var(--cyan);}
+
+  /* ---- Signature element: the timeline scrubber ---- */
+  .scrubber{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    background:var(--bg-elev);
+  }
+  .scrubber-inner{
+    max-width:var(--maxw); margin:0 auto; padding:0 28px;
+    display:flex; align-items:center; gap:18px;
+    height:56px;
+  }
+  @media (max-width:640px){ .scrubber-inner{padding:0 20px; gap:12px;} }
+  .tc{
+    font-family:var(--ff-mono); font-size:13px; color:var(--amber);
+    white-space:nowrap; letter-spacing:.03em; min-width:96px;
+  }
+  .track{
+    position:relative; flex:1; height:22px;
+    display:flex; align-items:center;
+  }
+  .track .ruler{
+    position:absolute; left:0; right:0; top:50%; height:1px;
+    background:var(--line-strong);
+  }
+  .track .clip{
+    position:absolute; top:4px; height:14px; border-radius:3px;
+    opacity:.85;
+  }
+  .track .playhead{
+    position:absolute; top:-6px; width:2px; height:34px;
+    background:var(--cyan);
+    box-shadow:0 0 8px rgba(79,209,232,.7);
+    animation:scrub 9s linear infinite;
+  }
+  .track .playhead::before{
+    content:""; position:absolute; top:-5px; left:50%; transform:translateX(-50%);
+    width:0; height:0;
+    border-left:5px solid transparent; border-right:5px solid transparent;
+    border-top:5px solid var(--cyan);
+  }
+  @keyframes scrub{
+    0%{left:0%;} 100%{left:100%;}
+  }
+  .track-label{
+    font-family:var(--ff-mono); font-size:11px; color:var(--text-dimmer);
+    text-transform:uppercase; letter-spacing:.08em; white-space:nowrap;
+  }
+
+  /* ============================================================
+     SECTION shared
+     ============================================================ */
+  section{padding:100px 0;}
+  @media (max-width:760px){ section{padding:70px 0;} }
+  .section-head{margin-bottom:44px; max-width:60ch;}
+  .section-head h2{
+    font-family:var(--ff-display);
+    font-weight:400; font-size:clamp(30px,4vw,46px);
+    margin:14px 0 10px; letter-spacing:.01em;
+  }
+  .section-head p{color:var(--text-dim); font-size:16px; margin:0;}
+
+  /* ============================================================
+     REEL
+     ============================================================ */
+  .reel-frame{
+    position:relative;
+    border-radius:var(--radius);
+    overflow:hidden;
+    border:1px solid var(--line-strong);
+    background:linear-gradient(135deg, #171B24, #0F1218);
+    aspect-ratio:16/9;
+  }
+  .reel-frame iframe{width:100%;height:100%;border:0;display:block;}
+  .reel-empty{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; text-align:center; padding:24px;
+  }
+  .reel-empty .play-ring{
+    width:72px; height:72px; border-radius:50%;
+    border:2px solid var(--amber);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .reel-empty .play-ring::after{
+    content:""; width:0; height:0;
+    border-top:11px solid transparent; border-bottom:11px solid transparent;
+    border-left:18px solid var(--amber);
+    margin-left:4px;
+  }
+  .reel-empty p{font-family:var(--ff-mono); font-size:13px; color:var(--text-dimmer); max-width:36ch;}
+
+  /* ============================================================
+     WORK — filters + grid
+     ============================================================ */
+  .filters{
+    display:flex; flex-wrap:wrap; gap:10px; margin-bottom:36px;
+  }
+  .filter-btn{
+    background:transparent; border:1px solid var(--line-strong);
+    color:var(--text-dim); padding:9px 18px; border-radius:100px;
+    font-size:13px; font-weight:600; cursor:pointer;
+    transition:all .15s ease;
+    font-family:var(--ff-body);
+  }
+  .filter-btn:hover{color:var(--text); border-color:var(--text-dimmer);}
+  .filter-btn.active{
+    background:var(--amber); border-color:var(--amber); color:#14110A;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+    gap:22px;
+  }
+  .card{
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform .18s ease, border-color .18s ease;
+    display:flex; flex-direction:column;
+  }
+  .card:hover{transform:translateY(-4px); border-color:var(--line-strong);}
+  .card-thumb{
+    position:relative; aspect-ratio:16/9; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-thumb::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%);
+  }
+  .card-thumb .badge{
+    position:absolute; top:10px; left:10px; z-index:2;
+    background:rgba(11,13,18,.72); backdrop-filter:blur(4px);
+    font-family:var(--ff-mono); font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--text); padding:5px 9px; border-radius:5px;
+    border:1px solid var(--line-strong);
+  }
+  .card-thumb .dur{
+    position:absolute; bottom:10px; right:10px; z-index:2;
+    background:rgba(11,13,18,.82);
+    font-family:var(--ff-mono); font-size:11px; color:var(--text);
+    padding:3px 7px; border-radius:4px;
+  }
+  .card-thumb .play{
+    position:relative; z-index:2;
+    width:46px;height:46px;border-radius:50%;
+    background:rgba(11,13,18,.55);
+    border:1px solid rgba(237,239,245,.4);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transform:scale(.8);
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .card:hover .play{opacity:1; transform:scale(1);}
+  .card-thumb .play::after{
+    content:""; width:0; height:0;
+    border-top:8px solid transparent; border-bottom:8px solid transparent;
+    border-left:13px solid #fff; margin-left:3px;
+  }
+  .card-body{padding:16px 18px 18px;}
+  .card-body h3{margin:0 0 4px; font-size:16px; font-weight:700;}
+  .card-body p{margin:0; font-size:13px; color:var(--text-dim);}
+
+  .empty-state{
+    border:1px dashed var(--line-strong); border-radius:var(--radius);
+    padding:50px 24px; text-align:center; color:var(--text-dimmer);
+    font-family:var(--ff-mono); font-size:13px;
+  }
+
+  /* ============================================================
+     TOOLS
+     ============================================================ */
+  .tools-row{display:flex; flex-wrap:wrap; gap:12px;}
+  .tool-chip{
+    border:1px solid var(--line); background:var(--bg-elev);
+    padding:11px 18px; border-radius:100px;
+    font-size:13.5px; font-weight:600; color:var(--text-dim);
+    display:flex; align-items:center; gap:9px;
+  }
+  .tool-chip .sw{width:7px;height:7px;border-radius:2px;background:var(--amber);flex-shrink:0;}
+
+  /* ============================================================
+     SOCIALS
+     ============================================================ */
+  .socials-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+    gap:14px;
+  }
+  .social-card{
+    display:flex; align-items:center; gap:14px;
+    padding:18px; border:1px solid var(--line); border-radius:var(--radius-sm);
+    text-decoration:none; background:var(--bg-elev);
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .social-card:hover{border-color:var(--cyan); transform:translateY(-2px);}
+  .social-card .ic{
+    width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--bg-elev-2); flex-shrink:0;
+  }
+  .social-card .ic svg{width:18px;height:18px;stroke:var(--text);}
+  .social-card strong{display:block; font-size:14px;}
+  .social-card span{display:block; font-size:12px; color:var(--text-dimmer); font-family:var(--ff-mono);}
+
+  /* ============================================================
+     CONTACT / FOOTER
+     ============================================================ */
+  .contact-box{
+    border:1px solid var(--line-strong); border-radius:var(--radius);
+    padding:56px 44px; text-align:center;
+    background:radial-gradient(500px 220px at 50% 0%, rgba(232,163,61,.08), transparent 70%);
+  }
+  @media (max-width:640px){ .contact-box{padding:40px 22px;} }
+  .contact-box h2{font-family:var(--ff-display); font-weight:400; font-size:clamp(30px,5vw,52px); margin:16px 0 12px;}
+  .contact-box p{color:var(--text-dim); max-width:44ch; margin:0 auto 30px;}
+  .contact-email{
+    font-family:var(--ff-mono); font-size:clamp(16px,3vw,22px);
+    color:var(--amber); text-decoration:none; word-break:break-all;
+  }
+  .contact-email:hover{text-decoration:underline;}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:30px 0;
+  }
+  .footer-row{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+  }
+  .footer-row p{margin:0; font-size:12.5px; color:var(--text-dimmer); font-family:var(--ff-mono);}
+  .back-top{font-size:12.5px; color:var(--text-dim); text-decoration:none; font-family:var(--ff-mono);}
+  .back-top:hover{color:var(--amber);}
+
+  /* ============================================================
+     MODAL (video player)
+     ============================================================ */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(6,7,10,.86);
+    display:none; align-items:center; justify-content:center;
+    z-index:100; padding:24px;
+    backdrop-filter:blur(4px);
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal-box{
+    width:100%; max-width:920px;
+    background:var(--bg-elev); border:1px solid var(--line-strong);
+    border-radius:var(--radius); overflow:hidden;
+  }
+  .modal-video{aspect-ratio:16/9; background:#000; position:relative;}
+  .modal-video iframe{width:100%;height:100%;border:0;}
+  .modal-video .reel-empty{position:absolute; inset:0;}
+  .modal-info{padding:18px 22px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px;}
+  .modal-info h3{margin:0 0 4px; font-size:17px;}
+  .modal-info p{margin:0; font-size:13px; color:var(--text-dim);}
+  .modal-close{
+    background:none; border:1px solid var(--line-strong); color:var(--text);
+    width:34px; height:34px; border-radius:50%; cursor:pointer; flex-shrink:0;
+    font-size:16px; line-height:1;
+  }
+  .modal-close:hover{border-color:var(--amber); color:var(--amber);}
+</style>
+</head>
+<body id="top">
+
+<a href="#main" class="visually-hidden" style="position:absolute;left:-9999px;">Skip to content</a>
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<header class="site-nav">
+  <div class="wrap nav-row">
+    <a href="#top" class="nav-brand"><span id="navName">Mika</span><span class="dot">.</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#reel">Reel</a>
+      <a href="#work">Work</a>
+      <a href="#tools">Tools</a>
+      <a href="#socials">Socials</a>
+      <a href="#contact" class="nav-cta">Contact</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero" style="padding-bottom:0;">
+    <div class="wrap hero-inner">
+      <p class="eyebrow" id="heroEyebrow">Video Editor · Reel updated 2026</p>
+      <h1>I cut stories that keep people <em>watching.</em></h1>
+      <p class="lede" id="heroLede">Weddings, brand content, music videos, and short-form — trimmed, graded, and paced so people don't scroll past.</p>
+
+      <div class="hero-meta">
+        <div>Based in<strong id="heroLocation">Philippines</strong></div>
+        <div>Availability<strong><span class="live-dot"></span><span id="heroAvailability">Open for projects</span></strong></div>
+        <div>Turnaround<strong id="heroTurnaround">3–7 day average</strong></div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#work" class="btn btn-primary">See the work</a>
+        <a href="#contact" class="btn btn-ghost">Start a project</a>
+      </div>
+    </div>
+
+    <!-- SIGNATURE ELEMENT: animated timeline scrubber -->
+    <div class="scrubber" aria-hidden="true">
+      <div class="scrubber-inner">
+        <span class="tc" id="tcReadout">00:00:00:00</span>
+        <div class="track">
+          <div class="ruler"></div>
+          <div class="clip" style="left:2%; width:14%; background:var(--amber);"></div>
+          <div class="clip" style="left:18%; width:9%; background:var(--cyan);"></div>
+          <div class="clip" style="left:29%; width:20%; background:var(--amber-dim);"></div>
+          <div class="clip" style="left:52%; width:11%; background:var(--magenta);"></div>
+          <div class="clip" style="left:66%; width:16%; background:var(--cyan);"></div>
+          <div class="clip" style="left:85%; width:13%; background:var(--amber);"></div>
+          <div class="playhead"></div>
+        </div>
+        <span class="track-label">Timeline · V1</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       REEL
+       ============================================================ -->
+  <section id="reel">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Showreel</p>
+        <h2>Watch the reel first</h2>
+        <p>A minute of the cuts, transitions and pacing I lean on across projects.</p>
+      </div>
+      <div class="reel-frame" id="reelFrame">
+        <!-- populated by JS from CONFIG.reelEmbedUrl -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WORK — filterable sample grid
+       ============================================================ -->
+  <section id="work">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Selected work</p>
+        <h2>Edit samples, by category</h2>
+        <p>Filtered from a single list in the code — add a new clip with a new category name and its own filter tab appears automatically. No layout changes needed.</p>
+      </div>
+
+      <div class="filters" id="filters"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TOOLS
+       ============================================================ -->
+  <section id="tools">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Kit</p>
+        <h2>What I cut with</h2>
+      </div>
+      <div class="tools-row" id="toolsRow"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SOCIALS
+       ============================================================ -->
+  <section id="socials">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Elsewhere</p>
+        <h2>Find more clips</h2>
+      </div>
+      <div class="socials-grid" id="socialsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CONTACT
+       ============================================================ -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-box">
+        <p class="eyebrow" style="justify-content:center;">Let's talk</p>
+        <h2>Got footage that needs a cut?</h2>
+        <p>Send the brief, the raw footage link, and a deadline. I'll reply with a quote and timeline within a day.</p>
+        <a href="#" id="contactEmail" class="contact-email">your@email.com</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-row">
+    <p id="footerLine">© 2026 Mika Santos. Built for editors who'd rather be editing.</p>
+    <a href="#top" class="back-top">Back to top ↑</a>
+  </div>
+</footer>
+
+<!-- ============================================================
+     VIDEO MODAL
+     ============================================================ -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-box">
+    <div class="modal-video" id="modalVideo"></div>
+    <div class="modal-info">
+      <div>
+        <h3 id="modalTitle"></h3>
+        <p id="modalMeta"></p>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ================================================================
+   CONFIG
+   Everything you'll want to change lives in this one object.
+   ================================================================ */
+const CONFIG = {
+  name: "Ahlmar Mallo",
+  eyebrow: "Video Editor · Reel updated 2026",
+  headline: "I cut stories that keep people <em>watching.</em>",
+  lede: "Weddings, brand content, music videos, and short-form — trimmed, graded, and paced so people don't scroll past.",
+  location: "Philippines",
+  availability: "Open for projects",
+  turnaround: "3–7 day average",
+  email: "ahlmarmmalo265@email.com",
+  footerLine: "Built for editors who'd rather be editing.",
+
+  // Paste a YouTube/Vimeo EMBED url here, e.g. "https://www.youtube.com/embed/VIDEO_ID"
+  // Leave empty to show a placeholder.
+  reelEmbedUrl: "",
+
+  tools: [
+    "Premiere Pro", "After Effects", "DaVinci Resolve",
+    "CapCut", "Photoshop"
+  ],
+
+  // Add / remove socials freely — icon falls back to a generic link icon
+  // if the platform below isn't one of the built-in ones.
+  socials: [
+    { platform: "Instagram", handle: "@artedits07", url: "#" },
+    { platform: "YouTube",   handle: "Arts Edits", url: "#" },
+    { platform: "TikTok",    handle: "@arts.edits", url: "#" }
+  ],
+
+  /* ==============================================================
+     SAMPLES — this is the part you'll touch most.
+     To add a new clip: copy one object below and edit it.
+     To add a brand-new CATEGORY: just type a new string in
+     "category" — a filter tab for it appears automatically,
+     you don't need to touch the grid or filter code at all.
+     ==============================================================
+     Fields:
+       title      - clip title shown on the card
+       category   - filter group, e.g. "Wedding Films"
+       client     - client / project name, shown under the title
+       duration   - text shown on the thumbnail, e.g. "1:24"
+       color      - hex used for the placeholder thumbnail gradient
+                    (swap for a real thumbnail image if you like —
+                     see thumbUrl below)
+       thumbUrl   - optional. Path/URL to a real thumbnail image.
+                    Leave empty to use the generated color thumbnail.
+       videoUrl   - YouTube/Vimeo EMBED url played in the modal.
+                    Leave empty and the modal will show a placeholder.
+     ============================================================== */
+  samples: [
+    {
+      title: "Sun & Sea — Wedding Film",
+      category: "Wedding Films",
+      client: "Private client, Batangas",
+      duration: "3:12",
+      color: "#E8A33D",
+      thumbUrl: "",
+      videoUrl: ""
+    },
+    {
+      title: "Golden Hour Vows",
+      category: "Wedding Films",
+      client: "Private client, Tagaytay",
+      duration: "2:48",
+      color: "#c98a2c",
+      thumbUrl: "",
+      videoUrl: ""
+    },
+    {
+      title: "Launch Spot — 30s Cut",
+      category: "Brand & Commercial",
+      client: "Local brand campaign",
+      duration: "0:30",
+      color: "#4FD1E8",
+      thumbUrl: "",
+      videoUrl: ""
+    },
+    {
+      title: "Product Teaser",
+      category: "Brand & Commercial",
+      client: "E-commerce client",
+      duration: "0:45",
+      color: "#3ba8bd",
+      thumbUrl: "",
+      videoUrl: ""
+    },
+    {
+      title: "Night Drive — Music Video",
+      category: "Music Videos",
+      client: "Independent artist",
+      duration: "3:35",
+      color: "#E85F9E",
+      thumbUrl: "",
+      videoUrl: ""
+    },
+    {
+      title: "Reel Series Ep. 4",
+      category: "Short-Form / Reels",
+      client: "Creator channel",
+      duration: "0:58",
+      color: "#7A5A26",
+      thumbUrl: "",
+      videoUrl: ""
+    },
+    {
+      title: "Q3 Recap",
+      category: "Corporate",
+      client: "Internal company video",
+      duration: "2:10",
+      color: "#5b6270",
+      thumbUrl: "",
+      videoUrl: ""
+    }
+    /* Add your next sample below — just copy an object above and edit it:
+    {
+      title: "",
+      category: "",
+      client: "",
+      duration: "",
+      color: "#E8A33D",
+      thumbUrl: "",
+      videoUrl: ""
+    },
+    */
+  ]
+};
+
+/* ================================================================
+   RENDER — you shouldn't need to touch anything below this line.
+   ================================================================ */
+document.getElementById('navName').textContent = CONFIG.name.split(' ')[0];
+document.getElementById('heroEyebrow').textContent = CONFIG.eyebrow;
+document.querySelector('.hero h1').innerHTML = CONFIG.headline;
+document.getElementById('heroLede').textContent = CONFIG.lede;
+document.getElementById('heroLocation').textContent = CONFIG.location;
+document.getElementById('heroAvailability').textContent = CONFIG.availability;
+document.getElementById('heroTurnaround').textContent = CONFIG.turnaround;
+document.getElementById('contactEmail').textContent = CONFIG.email;
+document.getElementById('contactEmail').href = "mailto:" + CONFIG.email;
+document.getElementById('footerLine').textContent = "© 2026 " + CONFIG.name + ". " + CONFIG.footerLine;
+document.title = CONFIG.name + " — Video Editor";
+
+// Nav toggle (mobile)
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+navToggle.addEventListener('click', () => {
+  const isOpen = navLinks.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', isOpen);
+});
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+// Reel frame
+const reelFrame = document.getElementById('reelFrame');
+function reelEmptyHTML(label){
+  return `<div class="reel-empty">
+    <div class="play-ring"></div>
+    <p>${label}</p>
+  </div>`;
+}
+if (CONFIG.reelEmbedUrl) {
+  reelFrame.innerHTML = `<iframe src="${CONFIG.reelEmbedUrl}" title="Showreel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+} else {
+  reelFrame.innerHTML = reelEmptyHTML("Drop your showreel's embed URL into CONFIG.reelEmbedUrl to play it here.");
+}
+
+// Tools
+const toolsRow = document.getElementById('toolsRow');
+toolsRow.innerHTML = CONFIG.tools.map(t => `<span class="tool-chip"><span class="sw"></span>${t}</span>`).join('');
+
+// Socials — small icon set, generic fallback for anything not listed
+const ICONS = {
+  Instagram: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>`,
+  YouTube: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5v5l4.5-2.5-4.5-2.5z" fill="currentColor" stroke="none"/></svg>`,
+  TikTok: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M14 3v10.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.5 2 4 4.5 4.3"/></svg>`,
+  Behance: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="7" width="7" height="10" rx="1.5"/><path d="M14 17V7h4a2.5 2.5 0 0 1 0 5h-4"/><path d="M14 12h4"/></svg>`,
+  Vimeo: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M22 7.5c-2 3-3.6 8.5-6.6 12-2.3 2.6-4 1-4.9-1.3L8 11.5c-.6-1.7-1.2-1.9-2.6-.9L4 9.6"/></svg>`,
+  Default: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>`
+};
+const socialsGrid = document.getElementById('socialsGrid');
+socialsGrid.innerHTML = CONFIG.socials.map(s => `
+  <a class="social-card" href="${s.url}" target="_blank" rel="noopener">
+    <span class="ic">${ICONS[s.platform] || ICONS.Default}</span>
+    <span>
+      <strong>${s.platform}</strong>
+      <span>${s.handle}</span>
+    </span>
+  </a>
+`).join('');
+
+// Samples — categories derived automatically from CONFIG.samples
+const categories = ["All", ...new Set(CONFIG.samples.map(s => s.category))];
+const filtersEl = document.getElementById('filters');
+const gridEl = document.getElementById('grid');
+let activeCategory = "All";
+
+function cardThumbStyle(sample){
+  if (sample.thumbUrl) {
+    return `background-image:url('${sample.thumbUrl}');background-size:cover;background-position:center;`;
+  }
+  return `background:linear-gradient(135deg, ${sample.color}33, #0F1218 70%);`;
+}
+
+function renderGrid(){
+  const list = activeCategory === "All"
+    ? CONFIG.samples
+    : CONFIG.samples.filter(s => s.category === activeCategory);
+
+  if (!list.length) {
+    gridEl.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">No samples in this category yet — add one to CONFIG.samples.</div>`;
+    return;
+  }
+
+  gridEl.innerHTML = list.map((s, i) => `
+    <article class="card" data-index="${CONFIG.samples.indexOf(s)}" tabindex="0" role="button" aria-label="Play ${s.title}">
+      <div class="card-thumb" style="${cardThumbStyle(s)}">
+        <span class="badge">${s.category}</span>
+        <span class="dur">${s.duration}</span>
+        <span class="play"></span>
+      </div>
+      <div class="card-body">
+        <h3>${s.title}</h3>
+        <p>${s.client}</p>
+      </div>
+    </article>
+  `).join('');
+
+  gridEl.querySelectorAll('.card').forEach(card => {
+    const open = () => openModal(CONFIG.samples[card.dataset.index]);
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  });
+}
+
+function renderFilters(){
+  filtersEl.innerHTML = categories.map(c =>
+    `<button class="filter-btn ${c === activeCategory ? 'active' : ''}" data-cat="${c}">${c}</button>`
+  ).join('');
+  filtersEl.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.cat;
+      renderFilters();
+      renderGrid();
+    });
+  });
+}
+
+renderFilters();
+renderGrid();
+
+// Modal
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalVideo = document.getElementById('modalVideo');
+const modalTitle = document.getElementById('modalTitle');
+const modalMeta = document.getElementById('modalMeta');
+const modalClose = document.getElementById('modalClose');
+
+function openModal(sample){
+  modalTitle.textContent = sample.title;
+  modalMeta.textContent = `${sample.category} · ${sample.client} · ${sample.duration}`;
+  if (sample.videoUrl) {
+    modalVideo.innerHTML = `<iframe src="${sample.videoUrl}" title="${sample.title}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  } else {
+    modalVideo.innerHTML = reelEmptyHTML("Add a videoUrl to this sample in CONFIG to play it here.");
+  }
+  modalBackdrop.classList.add('open');
+  modalClose.focus();
+}
+function closeModal(){
+  modalBackdrop.classList.remove('open');
+  modalVideo.innerHTML = '';
+}
+modalClose.addEventListener('click', closeModal);
+modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Timecode readout on the hero scrubber — purely decorative
+let frame = 0;
+setInterval(() => {
+  frame++;
+  const fps = 24;
+  const totalFrames = frame % (fps * 60);
+  const s = Math.floor(totalFrames / fps) % 60;
+  const f = totalFrames % fps;
+  const m = Math.floor(frame / (fps * 60)) % 60;
+  const h = Math.floor(frame / (fps * 60 * 60));
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('tcReadout').textContent = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
+}, 1000 / 24);
+</script>
+
+</body>
+</html>
