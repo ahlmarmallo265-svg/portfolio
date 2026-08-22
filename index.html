@@ -637,31 +637,38 @@
    Everything you'll want to change lives in this one object.
    ================================================================ */
 const CONFIG = {
-  name: "Ahlmar Mallo",
+  name: "Mika Santos",
   eyebrow: "Video Editor · Reel updated 2026",
   headline: "I cut stories that keep people <em>watching.</em>",
   lede: "Weddings, brand content, music videos, and short-form — trimmed, graded, and paced so people don't scroll past.",
   location: "Philippines",
   availability: "Open for projects",
   turnaround: "3–7 day average",
-  email: "ahlmarmallo265@gmail.com",
+  email: "your@email.com",
   footerLine: "Built for editors who'd rather be editing.",
 
-  // Paste a YouTube/Vimeo EMBED url here, e.g. "https://www.youtube.com/embed/VIDEO_ID"
-  // Leave empty to show a placeholder.
+  // OPTION A — self-hosted file: put an mp4 in a "videos" folder next to
+  // index.html and point to it here, e.g. "videos/reel.mp4". Plays with a
+  // native player, no external site needed.
+  reelVideoFile: "",
+
+  // OPTION B — paste a YouTube/Vimeo EMBED url here instead, e.g.
+  // "https://www.youtube.com/embed/VIDEO_ID". Only used if reelVideoFile
+  // above is empty. Leave both empty to show a placeholder.
   reelEmbedUrl: "",
 
   tools: [
     "Premiere Pro", "After Effects", "DaVinci Resolve",
-    "CapCut", "Photoshop"
+    "CapCut", "Photoshop", "Audition"
   ],
 
   // Add / remove socials freely — icon falls back to a generic link icon
   // if the platform below isn't one of the built-in ones.
   socials: [
-    { platform: "Instagram", handle: "@artedits07", url: "#" },
-    { platform: "YouTube",   handle: "Arts Edits", url: "#" },
-    { platform: "TikTok",    handle: "@arts.edits", url: "#" }
+    { platform: "Instagram", handle: "@mika.edits", url: "#" },
+    { platform: "YouTube",   handle: "Mika Santos Edits", url: "#" },
+    { platform: "TikTok",    handle: "@mika.edits", url: "#" },
+    { platform: "Behance",   handle: "mikasantos", url: "#" }
   ],
 
   /* ==============================================================
@@ -681,8 +688,10 @@ const CONFIG = {
                      see thumbUrl below)
        thumbUrl   - optional. Path/URL to a real thumbnail image.
                     Leave empty to use the generated color thumbnail.
+       videoFile  - self-hosted mp4, e.g. "videos/clip1.mp4". Preferred
+                    if you want everything on GitHub, no external site.
        videoUrl   - YouTube/Vimeo EMBED url played in the modal.
-                    Leave empty and the modal will show a placeholder.
+                    Only used if videoFile above is empty.
      ============================================================== */
   samples: [
     {
@@ -692,6 +701,7 @@ const CONFIG = {
       duration: "3:12",
       color: "#E8A33D",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     },
     {
@@ -701,6 +711,7 @@ const CONFIG = {
       duration: "2:48",
       color: "#c98a2c",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     },
     {
@@ -710,6 +721,7 @@ const CONFIG = {
       duration: "0:30",
       color: "#4FD1E8",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     },
     {
@@ -719,6 +731,7 @@ const CONFIG = {
       duration: "0:45",
       color: "#3ba8bd",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     },
     {
@@ -728,6 +741,7 @@ const CONFIG = {
       duration: "3:35",
       color: "#E85F9E",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     },
     {
@@ -737,6 +751,7 @@ const CONFIG = {
       duration: "0:58",
       color: "#7A5A26",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     },
     {
@@ -746,6 +761,7 @@ const CONFIG = {
       duration: "2:10",
       color: "#5b6270",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     }
     /* Add your next sample below — just copy an object above and edit it:
@@ -756,6 +772,7 @@ const CONFIG = {
       duration: "",
       color: "#E8A33D",
       thumbUrl: "",
+      videoFile: "",
       videoUrl: ""
     },
     */
@@ -794,10 +811,12 @@ function reelEmptyHTML(label){
     <p>${label}</p>
   </div>`;
 }
-if (CONFIG.reelEmbedUrl) {
+if (CONFIG.reelVideoFile) {
+  reelFrame.innerHTML = `<video controls playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;"><source src="${CONFIG.reelVideoFile}"></video>`;
+} else if (CONFIG.reelEmbedUrl) {
   reelFrame.innerHTML = `<iframe src="${CONFIG.reelEmbedUrl}" title="Showreel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
 } else {
-  reelFrame.innerHTML = reelEmptyHTML("Drop your showreel's embed URL into CONFIG.reelEmbedUrl to play it here.");
+  reelFrame.innerHTML = reelEmptyHTML("Add a videos/reel.mp4 file and set CONFIG.reelVideoFile, or paste an embed URL into CONFIG.reelEmbedUrl.");
 }
 
 // Tools
@@ -894,10 +913,12 @@ const modalClose = document.getElementById('modalClose');
 function openModal(sample){
   modalTitle.textContent = sample.title;
   modalMeta.textContent = `${sample.category} · ${sample.client} · ${sample.duration}`;
-  if (sample.videoUrl) {
+  if (sample.videoFile) {
+    modalVideo.innerHTML = `<video controls autoplay playsinline style="width:100%;height:100%;"><source src="${sample.videoFile}"></video>`;
+  } else if (sample.videoUrl) {
     modalVideo.innerHTML = `<iframe src="${sample.videoUrl}" title="${sample.title}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   } else {
-    modalVideo.innerHTML = reelEmptyHTML("Add a videoUrl to this sample in CONFIG to play it here.");
+    modalVideo.innerHTML = reelEmptyHTML("Add a videoFile (self-hosted mp4) or videoUrl to this sample in CONFIG to play it here.");
   }
   modalBackdrop.classList.add('open');
   modalClose.focus();
