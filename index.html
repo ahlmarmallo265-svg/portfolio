@@ -723,7 +723,7 @@ const CONFIG = {
       thumbUrl: "",
       videoFile: "",
       wistiaId: "e6704rm6f3xzs6z",
-      videoUrl: "https://ahlmarmallo265.wistia.com/s/e6704rm6f3xzs6z"
+      videoUrl: ""
     },
     {
       title: "Product Teaser",
@@ -914,23 +914,42 @@ const modalClose = document.getElementById('modalClose');
 function openModal(sample){
   modalTitle.textContent = sample.title;
   modalMeta.textContent = `${sample.category} · ${sample.client} · ${sample.duration}`;
+
   if (sample.videoFile) {
-    modalVideo.innerHTML = `<video controls autoplay playsinline style="width:100%;height:100%;"><source src="${sample.videoFile}"></video>`;
+
+    modalVideo.innerHTML = `
+      <video controls autoplay playsinline style="width:100%;height:100%;">
+        <source src="${sample.videoFile}">
+      </video>`;
+
+  } else if (sample.wistiaId) {
+
+    modalVideo.innerHTML = `
+      <wistia-player
+        media-id="${sample.wistiaId}"
+        style="width:100%;height:100%;display:block;">
+      </wistia-player>`;
+
   } else if (sample.videoUrl) {
-    modalVideo.innerHTML = `<iframe src="${sample.videoUrl}" title="${sample.title}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+
+    modalVideo.innerHTML = `
+      <iframe
+        src="${sample.videoUrl}"
+        title="${sample.title}"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen>
+      </iframe>`;
+
   } else {
-    modalVideo.innerHTML = reelEmptyHTML("Add a videoFile (self-hosted mp4) or videoUrl to this sample in CONFIG to play it here.");
+
+    modalVideo.innerHTML = reelEmptyHTML(
+      "Add a videoFile, wistiaId, or videoUrl to this sample."
+    );
   }
+
   modalBackdrop.classList.add('open');
   modalClose.focus();
 }
-function closeModal(){
-  modalBackdrop.classList.remove('open');
-  modalVideo.innerHTML = '';
-}
-modalClose.addEventListener('click', closeModal);
-modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 // Timecode readout on the hero scrubber — purely decorative
 let frame = 0;
