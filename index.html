@@ -715,10 +715,10 @@ const CONFIG = {
       videoUrl: ""
     },
     {
-      title: "Launch Spot — 30s Cut",
+      title: "Product Ads",
       category: "Brand & Commercial",
       client: "Local brand campaign",
-      duration: "0:30",
+      duration: "0:15",
       color: "#4FD1E8",
       thumbUrl: "",
       videoFile: "",
@@ -950,6 +950,25 @@ function openModal(sample){
   modalBackdrop.classList.add('open');
   modalClose.focus();
 }
+
+function closeModal(){
+  modalBackdrop.classList.remove('open');
+  modalVideo.innerHTML = '';
+}
+
+modalClose.addEventListener('click', closeModal);
+
+modalBackdrop.addEventListener('click', e => {
+  if (e.target === modalBackdrop) {
+    closeModal();
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
 
 // Timecode readout on the hero scrubber — purely decorative
 let frame = 0;
